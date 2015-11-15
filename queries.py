@@ -49,20 +49,18 @@ def make_student_table(dicts):
     return res
 
 
-def student_marks(student_login):
+def student_marks(uname):
     c = db.cursor()
-    c.execute("""SELECT user_id FROM users WHERE user_name=%s""", (student_login,))
+    c.execute("""SELECT user_id FROM users WHERE user_name=%s""", (uname,))
     user_id = c.fetchone()['user_id']
     print(user_id)
-    c.execute("""SELECT student_id FROM students WHERE user_id=%s""", (user_id,))
-    student_id = c.fetchone()['student_id']
-    print(student_id)
     q = "select c.class_full_name, m.date, m.description, m.mark "
     q += "from classes as c inner join marks as m "
     q += "on c.class_id = m.class_id where m.student_id = %s"
-    c.execute(q, (student_id,))
+    c.execute(q, (user_id,))
 
     res = c.fetchall()
     print(res)
 
     return make_student_table(res)
+
