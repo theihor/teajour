@@ -154,3 +154,14 @@ def teacher_classes(uname):
     print(res)
 
     return res
+
+
+def set_mark(student_id, mark_id, mark):
+    c = db.cursor()
+    c.execute("select mark from mark_values where mark_id=%s and student_id=%s", (mark_id, student_id))
+    if c.fetchone():
+        c.execute("update mark_values set mark=%s where mark_id=%s and student_id=%s", (mark, mark_id, student_id))
+    else:
+        c.execute("insert into mark_values (student_id, mark_id, mark) values (%s, %s, %s)", (student_id, mark_id, mark))
+    db.commit()
+
