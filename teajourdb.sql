@@ -41,7 +41,7 @@ CREATE TABLE `classes` (
 
 LOCK TABLES `classes` WRITE;
 /*!40000 ALTER TABLE `classes` DISABLE KEYS */;
-INSERT INTO `classes` VALUES (0,0,0,'Комп’ютерна криптографія','КК'),(1,24,0,' Технологія розробки Web-додатків','ТРВД');
+INSERT INTO `classes` VALUES (0,1,0,'Комп’ютерна криптографія','КК'),(1,24,0,' Технологія розробки Web-додатків','ТРВД');
 /*!40000 ALTER TABLE `classes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -202,4 +202,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-11-15 20:44:17
+-- Dump completed on 2015-11-15 21:32:34
