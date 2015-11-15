@@ -41,7 +41,7 @@ CREATE TABLE `classes` (
 
 LOCK TABLES `classes` WRITE;
 /*!40000 ALTER TABLE `classes` DISABLE KEYS */;
-INSERT INTO `classes` VALUES (0,1,0,'Комп’ютерна криптографія','КК'),(1,24,0,'Технологія розробки Web-додатків','ТРВД');
+INSERT INTO `classes` VALUES (0,1,0,'Комп’ютерна криптографія','КК'),(1,24,1,'Технологія розробки Web-додатків','ТРВД');
 /*!40000 ALTER TABLE `classes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -93,7 +93,7 @@ CREATE TABLE `mark_values` (
 
 LOCK TABLES `mark_values` WRITE;
 /*!40000 ALTER TABLE `mark_values` DISABLE KEYS */;
-INSERT INTO `mark_values` VALUES (1,2,5),(1,3,4),(2,2,3),(2,3,4),(3,2,1.5),(3,3,3),(4,2,10);
+INSERT INTO `mark_values` VALUES (1,2,5),(1,3,4),(2,2,3),(2,3,4),(3,2,1.5),(3,3,3),(4,2,10),(3,4,6);
 /*!40000 ALTER TABLE `mark_values` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -114,7 +114,7 @@ CREATE TABLE `marks` (
   UNIQUE KEY `mark_id_UNIQUE` (`mark_id`),
   KEY `fk_marks_1_idx` (`class_id`),
   CONSTRAINT `fk_marks_1` FOREIGN KEY (`class_id`) REFERENCES `classes` (`class_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -123,7 +123,7 @@ CREATE TABLE `marks` (
 
 LOCK TABLES `marks` WRITE;
 /*!40000 ALTER TABLE `marks` DISABLE KEYS */;
-INSERT INTO `marks` VALUES (1,NULL,NULL,'2015-11-11',0),(2,NULL,NULL,'2015-11-08',1),(3,NULL,'Lab1',NULL,0),(4,NULL,'Lab1',NULL,1);
+INSERT INTO `marks` VALUES (1,NULL,NULL,'2015-11-11',0),(2,NULL,NULL,'2015-11-08',1),(3,NULL,'Lab1',NULL,0),(4,NULL,'Lab1',NULL,1),(5,NULL,'Lab2',NULL,0);
 /*!40000 ALTER TABLE `marks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -224,4 +224,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-11-15 22:13:54
+-- Dump completed on 2015-11-16  0:10:08

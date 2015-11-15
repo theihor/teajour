@@ -165,3 +165,10 @@ def set_mark(student_id, mark_id, mark):
         c.execute("insert into mark_values (student_id, mark_id, mark) values (%s, %s, %s)", (student_id, mark_id, mark))
     db.commit()
 
+
+def add_mark(class_id, name=None, date=None, long_description=None):
+    if not name and not date: return
+    q = "INSERT INTO marks (name, date, long_description, class_id) VALUES (%s, %s, %s, %s)"
+    c = db.cursor()
+    c.execute(q, (name, date, long_description, class_id))
+    db.commit()
