@@ -87,7 +87,8 @@ def make_teacher_table(dicts):
     student_set = set()
     marks = {}
     for d in dicts:
-        desc = d['description']
+        print(d)
+        desc = d['col']
         if not desc:
             desc = str(d['date'])
         header_set.add(desc)
@@ -95,7 +96,10 @@ def make_teacher_table(dicts):
         student += " " + d['name'][:1] + "."
         student += " " + d['second_name'][:1] + "."
         student_set.add(student)
-        marks[student] = {desc: d['mark']}
+        if student in marks:
+            marks[student][desc] = d['mark']
+        else:
+            marks[student] = {desc: d['mark']}
 
     header = [u'Студент'] + sorted(list(header_set))
     students = sorted(list(student_set))
@@ -120,12 +124,29 @@ def teacher_table(uname, class_id=None):
         q = "select class_id from classes where teacher_id=%s"
         c.execute(q, (user_id,))
         class_id = c.fetchone()['class_id']
-    q = "select s.name, s.second_name, s.surname, m.date, m.description, m.mark "
-    q += "from students as s inner join marks as m "
-    q += "on s.user_id = m.student_id where m.class_id = %s"
+    q = "select s.name, s.second_name, s.surname"
+    q += ", mv.mark, mv.mark_id, m.name as col, m.date"
+    q += " from mark_values as mv inner join marks as m on m.mark_id = mv.mark_id"
+    q += " inner join students as s on s.user_id = mv.student_id where m.class_id = %s"
     c.execute(q, (class_id,))
 
     res = c.fetchall()
-    print(res)
+    #print(res)
 
     return make_teacher_table(res)
+
+
+def teacher_classes(uname):
+    c = db.cursor()
+    c.execute("""SELECT user_id FROM users WHERE user_name=%s and user_kind='teacher' """, (uname,))
+    user_id = c.fetchone()['user_id']
+    print(user_id)
+    q = "select class_id, class_full_name from classes where teacher_id=%s"
+    c.execute(q, (user_id,))
+    dicts = c.fetchall()
+    res = []
+    for d in dicts:
+        res.append((d['class_id'], d['class_full_name']))
+    print(res)
+
+    return res
