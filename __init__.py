@@ -20,6 +20,10 @@ def login():
         tab = student_marks(uname)
         print(tab)
         return render_template('student.html', tab=tab)
+    elif user_kind == 'teacher':
+        tab = teacher_table(uname)
+        print(tab)
+        return render_template('teacher.html', tab=tab)
     else:
         return render_template("login.html")
 

@@ -1,17 +1,11 @@
 {% extends "main.html" %}
 {% block content %}
   <table class="table">
+    {% for row in tab %}
     <tr>
-      <td> subject </td>
-      {% for row in my_list %}
-      <td> {{row["date"]}} </td>  
+      {% for val in row %}
+      <td>{{val}}</td>
       {% endfor %}
-    </tr>
-    {% for row in my_list %}
-    <tr>
-      {% for key in row %}
-      <td>{{row[key]}}</td>
-      {% endfor %}  
     </tr>
     {% endfor %}
   </table>
