@@ -1,12 +1,7 @@
 from flask import Flask, render_template, request, redirect
+from queries import *
 
 app = Flask(__name__)
-
-def check_login(uname, password):
-    if (uname and password):
-        return True
-    else:
-        return False
 
 @app.route('/')
 def homepage():
@@ -17,10 +12,16 @@ def login():
     uname = request.form.get('uname')
     password = request.form.get('password')
     print (uname, " ", password)
-    print (check_login(uname, password))
-    my_list=[{'sub':"math", 'mark':5},{'sub':"history", 'mark':5}]
-    print (my_list)
-    return render_template('student.html', my_list=my_list)
+    user_kind = check_login(uname, password)
+    print (user_kind)
+    if user_kind == "admin":
+        return render_template('start.html', name=uname)
+    elif user_kind == "student":
+        tab = student_marks(uname)
+        print(tab)
+        return render_template('student.html', tab=tab)
+    else:
+        return render_template("login.html")
 
         
 if __name__=="__main__":
