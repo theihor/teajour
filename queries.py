@@ -27,13 +27,18 @@ def make_student_table(dicts):
     subject_set = set()
     marks = {}
     for d in dicts:
-        desc = d['description']
-        if not desc:
-            desc = str(d['date'])
-        header_set.add(desc)
+        col = d['name']
+        if not col:
+            col = str(d['date'])
+        header_set.add(col)
         sub = d['class_full_name']
         subject_set.add(sub)
-        marks[sub] = {desc: d['mark']}
+        if sub in marks:
+            marks[sub][col] = d['mark']
+        else:
+            marks[sub] = {col: d['mark']}
+
+    print(marks)
 
     header = [u'Предмет'] + sorted(list(header_set))
     subjects = sorted(list(subject_set))
@@ -54,9 +59,10 @@ def student_marks(uname):
     c.execute("""SELECT user_id FROM users WHERE user_name=%s and user_kind='student' """, (uname,))
     user_id = c.fetchone()['user_id']
     print(user_id)
-    q = "select c.class_full_name, m.date, m.description, m.mark "
-    q += "from classes as c inner join marks as m "
-    q += "on c.class_id = m.class_id where m.student_id = %s"
+    q = "select c.class_full_name, m.date, m.name, mv.mark"
+    q += " from classes as c inner join marks as m on c.class_id = m.class_id"
+    q += " inner join mark_values as mv on m.mark_id = mv.mark_id"
+    q += " where mv.student_id = %s"
     c.execute(q, (user_id,))
 
     res = c.fetchall()
