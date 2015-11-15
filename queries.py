@@ -91,28 +91,32 @@ def make_teacher_table(dicts):
         desc = d['col']
         if not desc:
             desc = str(d['date'])
-        header_set.add(desc)
+        header_set.add((d['mark_id'], desc))
         student = d['surname']
         student += " " + d['name'][:1] + "."
         student += " " + d['second_name'][:1] + "."
-        student_set.add(student)
+        student_set.add((d['user_id'], student))
         if student in marks:
             marks[student][desc] = d['mark']
         else:
             marks[student] = {desc: d['mark']}
 
-    header = [u'Студент'] + sorted(list(header_set))
-    students = sorted(list(student_set))
+    columns = sorted(list(header_set), key=lambda x: x[1])
+    header = [u'Студент'] + [x[1] for x in columns]
+    students = sorted(list(student_set), key=lambda x: x[1])
     res.append(header)
-    for sub in students:
-        row = [sub]
+    for s in students:
+        s_name = s[1]
+        row = [s_name]
         for col in header[1:]:
-            if col in marks[sub]:
-                row.append(marks[sub][col])
+            if col in marks[s_name]:
+                row.append(marks[s_name][col])
             else:
                 row.append("")
         res.append(row)
-    return res
+    return {'table': res,
+            'columns': columns,
+            'students': students}
 
 
 def teacher_table(uname, class_id=None):
@@ -124,7 +128,7 @@ def teacher_table(uname, class_id=None):
         q = "select class_id from classes where teacher_id=%s"
         c.execute(q, (user_id,))
         class_id = c.fetchone()['class_id']
-    q = "select s.name, s.second_name, s.surname"
+    q = "select s.user_id, s.name, s.second_name, s.surname"
     q += ", mv.mark, mv.mark_id, m.name as col, m.date"
     q += " from mark_values as mv inner join marks as m on m.mark_id = mv.mark_id"
     q += " inner join students as s on s.user_id = mv.student_id where m.class_id = %s"
