@@ -17,7 +17,7 @@ def login():
     if user_kind == "admin":
         return render_template('start.html', name=uname)
     elif user_kind == "student":
-        tab = student_marks(uname)
+        tab = student_marks(uname)['table']
         print(tab)
         return render_template('student.html', tab=tab)
     elif user_kind == 'teacher':

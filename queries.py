@@ -67,8 +67,18 @@ def student_marks(uname):
 
     res = c.fetchall()
     print(res)
+    tab = make_student_table(res)
 
-    return make_student_table(res)
+    q = 'select g.group_id, g.name, g.email from groups as g'
+    q += ' inner join students as s on g.group_id = s.group_id'
+    q += ' where s.user_id = %s'
+    c.execute(q, (user_id,))
+    g = c.fetchone()
+
+    return { 'table': tab,
+             'user_id': user_id,
+             'group': g  # contains group_id, name, email
+             }
 
 
 def make_teacher_table(dicts):
