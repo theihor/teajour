@@ -1,12 +1,14 @@
 {% extends "main.html" %}
 {% block content %}
-  <table class="table">
-    {% for row in tab %}
-    <tr>
-      {% for val in row %}
-      <td>{{val}}</td>
-      {% endfor %}
-    </tr>
+<H2>Студент {{student_name}} група {{group}}</H2>
+<br>
+<table class="table">
+  {% for row in tab %}
+  <tr>
+    {% for val in row %}
+    <td>{{val}}</td>
     {% endfor %}
-  </table>
+  </tr>
+  {% endfor %}
+</table>
 {% endblock %}

@@ -4,7 +4,7 @@ from MySQLdb.cursors import DictCursor
 
 db = MySQLdb.connect(host="localhost", # your host, usually localhost
                      user="root", # your username
-                     passwd="12", # your password
+                     passwd="W3lcome", # your password
                      db="teajourdb",# name of the data base
                      charset='utf8',
                      use_unicode=True,
@@ -14,11 +14,10 @@ db = MySQLdb.connect(host="localhost", # your host, usually localhost
 
 def check_login(uname, password):
     c = db.cursor()
-    c.execute("""SELECT user_kind FROM users
+    c.execute("""SELECT user_id, user_kind FROM users
              WHERE user_name=%s and user_password=%s""", (uname, password))
-    res = c.fetchone()
-    print(res)
-    if res: return res['user_kind']
+    res = c.fetchone()    
+    if res: return [res['user_id'], res['user_kind']]
 
 
 def make_student_table(dicts):
@@ -38,7 +37,7 @@ def make_student_table(dicts):
         else:
             marks[sub] = {col: d['mark']}
 
-    print(marks)
+    # print(marks)
 
     header = [u'Предмет'] + sorted(list(header_set))
     subjects = sorted(list(subject_set))
@@ -54,11 +53,11 @@ def make_student_table(dicts):
     return res
 
 
-def student_marks(uname):
+def student_marks(user_id):
     c = db.cursor()
-    c.execute("""SELECT user_id FROM users WHERE user_name=%s and user_kind='student' """, (uname,))
-    user_id = c.fetchone()['user_id']
-    print(user_id)
+    # c.execute("""SELECT user_id FROM users WHERE user_name=%s and user_kind='student' """, (uname,))
+    # user_id = c.fetchone()['user_id']
+    # print(user_id)
     q = "select c.class_full_name, m.date, m.name, mv.mark"
     q += " from classes as c inner join marks as m on c.class_id = m.class_id"
     q += " inner join mark_values as mv on m.mark_id = mv.mark_id"
@@ -66,7 +65,7 @@ def student_marks(uname):
     c.execute(q, (user_id,))
 
     res = c.fetchall()
-    print(res)
+    # print(res)
     tab = make_student_table(res)
 
     q = 'select g.group_id, g.name, g.email from groups as g'
@@ -75,8 +74,13 @@ def student_marks(uname):
     c.execute(q, (user_id,))
     g = c.fetchone()
 
+    q = 'select surname, name, second_name from students where user_id=%s'
+    c.execute(q, (user_id,))
+    s = c.fetchone()
+
+
     return { 'table': tab,
-             'user_id': user_id,
+             'student': s,
              'group': g  # contains group_id, name, email
              }
 
@@ -87,7 +91,7 @@ def make_teacher_table(dicts):
     student_set = set()
     marks = {}
     for d in dicts:
-        print(d)
+        # print(d)
         desc = d['col']
         if not desc:
             desc = str(d['date'])
@@ -96,6 +100,7 @@ def make_teacher_table(dicts):
         student += " " + d['name'][:1] + "."
         student += " " + d['second_name'][:1] + "."
         student_set.add((d['user_id'], student))
+        if not d['mark']: d['mark'] = ''
         if student in marks:
             marks[student][desc] = d['mark']
         else:
@@ -119,11 +124,11 @@ def make_teacher_table(dicts):
             'students': students}
 
 
-def teacher_table(uname, class_id=None):
+def teacher_table(user_id, class_id=None):
     c = db.cursor()
-    c.execute("""SELECT user_id FROM users WHERE user_name=%s and user_kind='teacher' """, (uname,))
-    user_id = c.fetchone()['user_id']
-    print(user_id)
+    # c.execute("""SELECT user_id FROM users WHERE user_name=%s and user_kind='teacher' """, (uname,))
+    # user_id = c.fetchone()['user_id']
+    # print(user_id)
     if not class_id:
         q = "select class_id from classes where teacher_id=%s"
         c.execute(q, (user_id,))
@@ -140,10 +145,10 @@ def teacher_table(uname, class_id=None):
     return make_teacher_table(res)
 
 
-def teacher_classes(uname):
+def teacher_classes(user_id):
     c = db.cursor()
-    c.execute("""SELECT user_id FROM users WHERE user_name=%s and user_kind='teacher' """, (uname,))
-    user_id = c.fetchone()['user_id']
+    # c.execute("""SELECT user_id FROM users WHERE user_name=%s and user_kind='teacher' """, (uname,))
+    # user_id = c.fetchone()['user_id']
     print(user_id)
     q = "select class_id, class_full_name from classes where teacher_id=%s"
     c.execute(q, (user_id,))
@@ -171,4 +176,15 @@ def add_mark(class_id, name=None, date=None, long_description=None):
     q = "INSERT INTO marks (name, date, long_description, class_id) VALUES (%s, %s, %s, %s)"
     c = db.cursor()
     c.execute(q, (name, date, long_description, class_id))
+    mark_id = c.lastrowid
+    q = 'select group_id from classes where class_id=%s'
+    c.execute(q, (class_id,))
+    group_id = c.fetchone()['group_id']
+    
+    q = 'select user_id as student_id from students where group_id=%s '
+    c.execute(q, (group_id,))
+    students = [x['student_id'] for x in c.fetchall()]
+    q = 'insert into mark_values (student_id, mark_id) values (%s, %s)'
+    for s_id in students:
+        c.execute(q, (s_id, mark_id))
     db.commit()

@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+{% block content %}
+<form  method="POST" action="updated" role="form">
+  <input type="hidden" name="student_id" value={{student_id}}>
+  <input type="hidden" name="teacher_id" value={{teacher_id}}>
+  <select size="1" class="form-control" name="dates">
+    {% for id, text in zipped %}
+    <option value={{id}}>{{text}}</option>
+    {% endfor %}
+  </select>
+  <input type="text" class="form-control" placeholder="mark" name="mark">
+  <br>
+  <button type="submit" class="btn btn-success">Update</button>
+</form>
+{% endblock %}
