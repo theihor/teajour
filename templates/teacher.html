@@ -1,23 +1,22 @@
 {% extends "main.html" %}
 {% block content %}
-
- <script type="text/javascript" src="{{ url_for('static', filename='jquery.js') }}"</script>
- <script type="text/javascript" src="{{ url_for('static', filename='ajaxupload.js') }}"></script>
- <script src="{{ url_for('static', filename='main.js') }}"></script>
+ <script type="text/javascript" src="static/jquery.js"></script>
+ <script type="text/javascript" src="static/ajaxupload.js"></script>
+ <script type="text/javascript" src="static/main.js"></script>
  <script type="text/javascript">
-   alert(getTeacherData());
+
  </script>
-<table class="table">
-  <form  method="POST" action="add" role="form">
-    <tr>
+<table class="table" id="tchTable">
+ <!-- <form  method="POST" action="add" role="form" id="headForm">
+     <tr id="tr1">
       <input type="hidden" name="teacher_id" value={{teacher_id}}>
-      <select size="1" class="form-control" name="class_id">
-        {% for id, text in teacher_classes %}
+       <select size="1" class="form-control" name="class_id">
+       {% for id, text in teacher_classes %}
         <option value={{id}}>{{text}}</option>
-        {% endfor %}
-      </select>
+        {% endfor %}        
+      </select> 
     </tr>
-    <tr>
+   <tr id="tr2">
       <td>Студент</td>
       {% for row, id in hzipped %}
       <input type="hidden" name="column_id" value={{id[0]}}>
@@ -38,6 +37,7 @@
       <td><button type="submit" class="btn btn-success">update</button></td>
     </tr>
   </form>
-  {% endfor %}
+  {% endfor %}-->
 </table>
+
 {% endblock %}
