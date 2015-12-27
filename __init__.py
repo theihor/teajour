@@ -69,19 +69,20 @@ def updatepage():
 @app.route('/updated', methods=['POST'])
 def updated():
     # print("hello")
-    mark_id = request.form.get('dates')
+    mark_id = request.form.get('mark_id')
     mark = request.form.get('mark')
     student_id = request.form.get('student_id')
     teacher_id = request.form.get('teacher_id')
     
     if (mark == ""):
         mark = None
-    # print (mark_id)
-    # print (student_id)
-    # print (mark)
+    print ("mid = ", mark_id)
+    print ("sid = ", student_id)
+    print ("m = ", mark)
     
     set_mark(student_id, mark_id, mark)
-    return redirect(url_for('.teacher', user_id=teacher_id))
+    # return redirect(url_for('.teacher', user_id=teacher_id))
+    return jsonify({"OK" : "OK"})
 
 @app.route('/add', methods=['POST'])
 def addpage():

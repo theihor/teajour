@@ -100,52 +100,63 @@ function createTableHeader(columns) {
     
 }
 
-function createTableBody(students, table) {
+function createTableBody(students, table, marks) {
     var tbody = document.createElement('tbody');
     var tchTable = document.getElementById('tchTable');
     tchTable.appendChild(tbody);
 
     i = 0;
     var j = 1;
-    for(i in students) {
-        var tr = document.createElement('tr');
-       
-        var td = document.createElement('td');
-        td.innerHTML = students[i][1];
-        tr.appendChild(td);
-       
-        for(var k=1; k < table[j].length; k++){
+    for (var i = 0; i < students.length; i++) {
+        (function (i) {
+            var tr = document.createElement('tr');
+            
+            var td = document.createElement('td');
+            td.innerHTML = students[i][1];
+            tr.appendChild(td);
+            
+            for(var k=1; k < table[j].length; k++){
+                
                 td = document.createElement('td');
-                td.innerHTML = table[j][k];
+                var fm = document.createElement('form');
+                fm.role = "form";
+                var dv = document.createElement('div');
+                dv.class = "form-group";
+                var txt = document.createElement('input');
+                txt.type = 'text';
+                txt.value = table[j][k];
+                txt.class = "form-control";
+                (function (k){
+                    var student_id = students[i][0];
+                    var mark_id = marks[k-1][0];
+                    
+                    txt.addEventListener('blur', function(){
+                        $.ajax({
+                            type: 'POST',
+                            async: false,
+                            timeout: 30000,
+                            url: "updated",
+                            dataType: 'json',
+                            data: {"mark" : this.value, "student_id" : student_id, "mark_id" : mark_id },
+                            error: function (request, error) {
+                                // console.log(arguments);
+                                alert(" Can't do because: " + error + request);
+                            }
+                        });
+                    });
+                    dv.appendChild(txt);
+                })(k);
+                
+                fm.appendChild(dv);
+                td.appendChild(fm);
                 tr.appendChild(td);
-        }
-        
-        var form = document.createElement('form');
-        form.method = "POST";
-        form.action = "update";
-        form.setAttribute("role", "form"); 
-        
-        form.appendChild(newTeacherIdInput());
-       
-        var input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'student_id';
-        input.value = students[i][0];
-        form.appendChild(input);        
-        
-        var tdBtn = document.createElement('td');
-        var btn = document.createElement('button');
-        btn.type = "submit";
-        btn.className = "btn btn-success";
-        btn.innerHTML = "update";
-     
-        form.appendChild(btn);
-        tdBtn.appendChild(form);
-        tr.appendChild(tdBtn);
-       
-        tbody.appendChild(tr);
-        
-        j++;
+                
+            }
+            
+            tbody.appendChild(tr);
+            
+            j++;
+        })(i);
     }
 }
 
@@ -160,6 +171,6 @@ window.onload = function createTable()
     var teacherIdInput = newTeacherIdInput();
    
     createTableHeader(data['teacher_table']['columns']);
-    createTableBody(data['teacher_table']['students'], data['teacher_table']['table']);
+    createTableBody(data['teacher_table']['students'], data['teacher_table']['table'], data['teacher_table']['columns']);
     
 }
