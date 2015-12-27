@@ -149,14 +149,14 @@ def teacher_classes(user_id):
     c = db.cursor()
     # c.execute("""SELECT user_id FROM users WHERE user_name=%s and user_kind='teacher' """, (uname,))
     # user_id = c.fetchone()['user_id']
-    print(user_id)
+    # print(user_id)
     q = "select class_id, class_full_name from classes where teacher_id=%s"
     c.execute(q, (user_id,))
     dicts = c.fetchall()
     res = []
     for d in dicts:
         res.append((d['class_id'], d['class_full_name']))
-    print(res)
+    # print(res)
 
     return res
 

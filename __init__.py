@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from queries import *
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ def login():
     password = request.form.get('password')
     # print (uname, " ", password)
     user_info = check_login(uname, password)
-    print ("user_info =", user_info)
+    # print ("user_info =", user_info)
     if not(user_info):
         return render_template("login.html")
     user_kind = user_info[1]
@@ -21,14 +21,41 @@ def login():
     # print ("GELLO")
     # print ("dddd",user_kind)
     if user_kind == "admin":
-        return adminpage(user_id)
+        return redirect(url_for('.admin', user_id=user_id))
+        # return adminpage(user_id)
     elif user_kind == "student":
-        return studentpage(user_id)
+        return redirect(url_for('.student', user_id=user_id))
+        # return studentpage(user_id)
     elif user_kind == 'teacher':
-        return teacherpage(user_id)
+        return redirect(url_for('.teacher', user_id=user_id))
+        # return teacherpage(user_id)
     else:
         return render_template("login.html")
 
+@app.route('/admin')
+def admin():
+    user_id = request.args['user_id']
+    return render_adminpage(user_id)
+
+@app.route('/student')
+def student():
+    user_id = request.args['user_id']
+    return render_studentpage(user_id)
+
+@app.route('/teacher')
+def teacher():
+    user_id = request.args['user_id']
+    return render_teacherpage(user_id)
+
+@app.route('/teacher_data', methods=['POST'])
+def teacher_data():
+    print("teacher_data")
+    user_id = request.form.get("data")    
+    teacher_c = teacher_classes(user_id)
+    tab = teacher_table(user_id)
+    print("TEACHER_CLASSES = ", teacher_c)
+    print("TABLE = ", tab)
+    return jsonify({'teacher_classes' : teacher_c, 'teacher_table' : tab})
 
 @app.route('/update', methods=['POST'])
 def updatepage():
@@ -41,12 +68,12 @@ def updatepage():
 
 @app.route('/updated', methods=['POST'])
 def updated():
-    print("hello")
+    # print("hello")
     mark_id = request.form.get('dates')
     mark = request.form.get('mark')
     student_id = request.form.get('student_id')
     teacher_id = request.form.get('teacher_id')
-  
+    
     if (mark == ""):
         mark = None
     # print (mark_id)
@@ -54,8 +81,7 @@ def updated():
     # print (mark)
     
     set_mark(student_id, mark_id, mark)
-
-    return teacherpage(teacher_id)
+    return redirect(url_for('.teacher', user_id=teacher_id))
 
 @app.route('/add', methods=['POST'])
 def addpage():
@@ -90,19 +116,19 @@ def addedpage():
     # print (teacher_id)
     # print("hello")
     add_mark(class_id, name, date, description)
-    return teacherpage(teacher_id)
+    return redirect(url_for('.teacher', user_id=teacher_id))
 
     
-def adminpage(user_id):
+def render_adminpage(user_id):
     return render_template('start.html', name=user_id)
     
-def studentpage(user_id):
+def render_studentpage(user_id):
     tab = student_marks(user_id)
     # print(tab)
     student_name =tab['student']['surname'] + " " + tab['student']['name'] + " " + tab['student']['second_name']
     return render_template('student.html',student_name=student_name, group=tab['group']['name'], tab=tab['table'])
 
-def teacherpage(user_id):
+def render_teacherpage(user_id):
     # print("Hi there", user_id)
     teacher_c = teacher_classes(user_id)
     # print(teacher_c)

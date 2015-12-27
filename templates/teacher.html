@@ -1,5 +1,12 @@
 {% extends "main.html" %}
 {% block content %}
+
+ <script type="text/javascript" src="{{ url_for('static', filename='jquery.js') }}"</script>
+ <script type="text/javascript" src="{{ url_for('static', filename='ajaxupload.js') }}"></script>
+ <script src="{{ url_for('static', filename='main.js') }}"></script>
+ <script type="text/javascript">
+   alert(getTeacherData());
+ </script>
 <table class="table">
   <form  method="POST" action="add" role="form">
     <tr>
