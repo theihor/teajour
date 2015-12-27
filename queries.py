@@ -4,7 +4,7 @@ from MySQLdb.cursors import DictCursor
 
 db = MySQLdb.connect(host="localhost", # your host, usually localhost
                      user="root", # your username
-                     passwd="W3lcome", # your password
+                     passwd="12", # your password
                      db="teajourdb",# name of the data base
                      charset='utf8',
                      use_unicode=True,

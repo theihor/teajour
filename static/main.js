@@ -34,113 +34,132 @@ function getTeacherData(){
     });
     return res;
 }
-window.onload = function createTable()
-{
-   // document.write("<link rel='stylesheet' href='bootstrap.css' type='text/css'>");
-    data = getTeacherData();
-    
-    var tchTable = document.getElementById('tchTable');
-    
-    var input1 = document.createElement('input');
-    input1.type = 'hidden';
-    input1.name = 'teacher_id';
-    
-    var user_id = getUrlVars()['user_id'];
-    input1.value = user_id;
-    
-    var tr1 = document.createElement('tr'); 
-    tr1.className = "tr1";
-    tr1.appendChild(input1);
-    
-    var mySelect = document.createElement('select');
-    mySelect.size = "1";
-    mySelect.className = "form-control";
-    mySelect.name = "class_id";
-    
-    var trOption = document.createElement('option');
-    trOption.value = data['teacher_classes'][0][0];
-    trOption.text = data['teacher_classes'][0][1];
-    mySelect.appendChild(trOption);   
-    tr1.appendChild(mySelect);
 
-    var mform = document.createElement('form');
-    mform.method = "POST";
-    mform.action = "new";
-    mform.setAttribute("role", "form"); 
-    mform.appendChild(tr1);
+function newTeacherIdInput() {
+    var teacherIdInput = document.createElement('input');
+    teacherIdInput.type = 'hidden';
+    teacherIdInput.name = 'teacher_id';
+    teacherIdInput.value = getUrlVars()['user_id'];
 
+    return teacherIdInput;
+}
 
-    var tr2 = document.createElement('tr'); 
-
-    var td1 = document.createElement('td');
-    td1.innerHTML = "Студент";
-    tr2.appendChild(td1);
-    for(i in data['teacher_table']['columns'])  {
-        var input = document.createElement('input');
-        input.type = 'hidden';
-        input.name = 'column_id';
-        input.value = data['teacher_table']['columns'][i][0];
-        tr2.appendChild(input);
-        var td = document.createElement('td');
-        td.innerHTML = data['teacher_table']['columns'][i][1];
-        tr2.appendChild(td);
+function createClassSelect(classes) {
+    var form = document.createElement('form');
+    
+    var classSelect = document.createElement('select');
+    classSelect.size = "1";
+    classSelect.className = "form-control";
+    classSelect.name = "class_id";
+   
+    for (i in classes) {
+        var option = document.createElement('option');
+        option.value = classes[i][0];
+        option.text = classes[i][1];
+        classSelect.appendChild(option);   
     }
-    var tdBtn = document.createElement('td');
+
+    form.appendChild(newTeacherIdInput());
+    form.appendChild(classSelect);
+
+    document.body.insertBefore(form, document.getElementById('tchTable'));
+
+}
+
+function createTableHeader(columns) {
+    var thead = document.createElement('thead');
+    var tr = document.createElement('tr'); 
+    thead.appendChild(tr);
+    var tchTable = document.getElementById('tchTable');
+    tchTable.appendChild(thead);
+    
+    var th = document.createElement('th');
+    th.innerHTML = "Студент";
+    tr.appendChild(th);
+    
+    for(i in columns)  {
+        var th = document.createElement('th');
+        th.innerHTML = columns[i][1];
+        tr.appendChild(th);
+    }
+    
+    var thBtn = document.createElement('th');
+    var form = document.createElement('form');
+    form.appendChild(newTeacherIdInput());
+    form.method = "POST";
+    form.action = "add";
+    form.setAttribute("role", "form"); 
+    
     var btn = document.createElement('button');
     btn.type = "submit";
     btn.className = "btn btn-success";
     btn.innerHTML = "new";
-    tdBtn.appendChild(btn);
-    tr2.appendChild(tdBtn);
-    mform.appendChild(tr2);
-    tchTable.appendChild(mform);
+    form.appendChild(btn);
+    thBtn.appendChild(form);
+    tr.appendChild(thBtn);
+    
+}
+
+function createTableBody(students, table) {
+    var tbody = document.createElement('tbody');
+    var tchTable = document.getElementById('tchTable');
+    tchTable.appendChild(tbody);
 
     i = 0;
     var j = 1;
-    for(i in data['teacher_table']['students']){
+    for(i in students) {
+        var tr = document.createElement('tr');
+       
+        var td = document.createElement('td');
+        td.innerHTML = students[i][1];
+        tr.appendChild(td);
+       
+        for(var k=1; k < table[j].length; k++){
+                td = document.createElement('td');
+                td.innerHTML = table[j][k];
+                tr.appendChild(td);
+        }
+        
         var form = document.createElement('form');
         form.method = "POST";
         form.action = "update";
         form.setAttribute("role", "form"); 
-
-        var tr = document.createElement('tr');
-       
-        var input2 = document.createElement('input');
-        input2.type = 'hidden';
-        input2.name = 'student_id';
-        input2.value = data['teacher_table']['students'][i][0];
-        tr.appendChild(input2);
-       
-        var input3 = document.createElement('input');
-        input3.type = 'hidden';
-        input3.name = 'teacher_id';
-        input3.value = user_id;
-        tr.appendChild(input3);
-       
-        var td1 = document.createElement('td');
-        td1.innerHTML = data['teacher_table']['students'][i][1];
-        tr.appendChild(td1);
-        form.appendChild(tr);
-       
-        for(var k=1; k < data['teacher_table']['table'][j].length; k++){
-                var td2 = document.createElement('td');
-                td2.innerHTML = data['teacher_table']['table'][j][k];
-                tr.appendChild(td2);
-        }
-       
-        var tdBtn = document.createElement('td');
         
+        form.appendChild(newTeacherIdInput());
+       
+        var input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'student_id';
+        input.value = students[i][0];
+        form.appendChild(input);        
+        
+        var tdBtn = document.createElement('td');
         var btn = document.createElement('button');
         btn.type = "submit";
         btn.className = "btn btn-success";
         btn.innerHTML = "update";
-        tdBtn.appendChild(btn);
-       
+     
+        form.appendChild(btn);
+        tdBtn.appendChild(form);
         tr.appendChild(tdBtn);
        
-        tchTable.appendChild(form);
-        form.appendChild(tr);
+        tbody.appendChild(tr);
         
         j++;
     }
+}
+
+window.onload = function createTable()
+{
+    data = getTeacherData();
+    var user_id = getUrlVars()['user_id'];
+    createClassSelect(data['teacher_classes']);
+
+    var tchTable = document.getElementById('tchTable');
+    
+    var teacherIdInput = newTeacherIdInput();
+   
+    createTableHeader(data['teacher_table']['columns']);
+    createTableBody(data['teacher_table']['students'], data['teacher_table']['table']);
+    
 }
